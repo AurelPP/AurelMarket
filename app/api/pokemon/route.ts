@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 function toInt(v: string | null) {
   if (!v) return null;
   const n = Number(v);

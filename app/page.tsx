@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Filters, FiltersState } from "@/components/Filters";
@@ -7,7 +8,7 @@ import { PokemonCard } from "@/components/PokemonCard";
 import { buildQuery, parseQuery } from "@/lib/filters";
 import type { PokemonListing } from "@/types/pokemon";
 
-export default function HomePage() {
+function HomePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -122,5 +123,19 @@ export default function HomePage() {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <p className="text-zinc-400">Chargement...</p>
+        </main>
+      }
+    >
+      <HomePageContent />
+    </Suspense>
   );
 }
