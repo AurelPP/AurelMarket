@@ -52,24 +52,22 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const pass = process.env.ADMIN_PASSWORD || "";
-  if (!pass) return unauthorized();
-
   // Page de login et API de login : accès sans cookie
   if (pathname === "/admin/login") return NextResponse.next();
   if (pathname === "/api/admin/login" && req.method === "POST")
     return NextResponse.next();
 
+  const pass = process.env.ADMIN_PASSWORD || "";
   const cookie = req.cookies.get(ADMIN_COOKIE)?.value;
-  if (cookie && (await checkSessionCookie(cookie))) {
-    return NextResponse.next();
-  }
+  const hasValidSession = cookie && pass && (await checkSessionCookie(cookie));
 
-  // Pas de session valide : redirection vers login (pages) ou 401 (API)
+  if (hasValidSession) return NextResponse.next();
+
+  // Pas de session : pour les pages admin → redirection login (toujours une page, jamais du JSON)
   if (pathname.startsWith("/admin")) return loginRedirect(req);
   return unauthorized();
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*"],
+  matcher: ["/admin", "/admin/:path*", "/api/admin/:path*"],
 };
