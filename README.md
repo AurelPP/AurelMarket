@@ -1,17 +1,18 @@
 # Cobblemon Market (JSON -> Vitrine)
 
-Petit site vitrine Next.js + Prisma + SQLite.
+Petit site vitrine Next.js + Prisma + PostgreSQL.
 
 ## Prérequis
 - Node.js 18+ (recommandé 20+)
+- PostgreSQL (local ou distant pour `DATABASE_URL`)
 
 ## Installation
 ```bash
 npm install
 cp .env.example .env
-# édite .env et change ADMIN_PASSWORD
+# édite .env : DATABASE_URL (PostgreSQL), ADMIN_PASSWORD
 npx prisma generate
-npx prisma migrate dev --name init
+npx prisma migrate dev
 npm run dev
 ```
 
@@ -24,4 +25,4 @@ Dans /admin, uploade un fichier JSON exporté par Cobblemon Export (un tableau d
 
 ## Notes
 - Déduplication: si `uuid` est présent, on upsert dessus. Sinon, on utilise un `fingerprint`.
-- Le filtre "IV total" est fait côté serveur après requête (SQLite + Prisma).
+- Le filtre "IV total" est fait côté serveur après requête (Prisma).

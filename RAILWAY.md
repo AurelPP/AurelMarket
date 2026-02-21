@@ -1,85 +1,68 @@
 # Déployer Cobblemon Market sur Railway
 
-Guide pas à pas pour mettre l’app en ligne 24/7 sur [Railway](https://railway.app).
+Guide pour mettre l’app en ligne 24/7 sur [Railway](https://railway.app).  
+La base est en **PostgreSQL** (service Railway) : **plus de perte de données** aux redéploiements.
 
 ## 1. Préparer le dépôt
 
-- Pousse le projet sur **GitHub** (ou GitLab) si ce n’est pas déjà fait.
-- Vérifie que ton `.env` n’est **pas** commité (il doit être dans `.gitignore`).
+- Pousse le projet sur **GitHub** (ou GitLab).
+- Vérifie que ton `.env` n’est **pas** commité (dans `.gitignore`).
 
 ## 2. Créer un projet Railway
 
-1. Va sur [railway.app](https://railway.app) et connecte-toi (GitHub recommandé).
+1. Va sur [railway.app](https://railway.app) et connecte-toi (GitHub).
 2. **New Project** → **Deploy from GitHub repo**.
-3. Choisis le repo `cobblemon-market` (autorise Railway si besoin).
-4. Railway crée un service et lance un premier build.
+3. Choisis ton repo (ex. `AurelMarket`). Railway crée un service (ton app).
 
-## 3. Base de données (SQLite + volume)
+## 3. Ajouter PostgreSQL (base qui ne se perd plus)
 
-Sur Railway, le disque est éphémère sauf si tu montes un **Volume**. Il faut stocker le fichier SQLite sur ce volume.
+1. Dans le **même projet** Railway, ouvre la **palette** : **Ctrl+K** (ou **Cmd+K**).
+2. Choisis **« Add PostgreSQL »** (ou **« New » → « Database » → « PostgreSQL »**).
+3. Railway crée un **service PostgreSQL** et lui génère une **variable `DATABASE_URL`**.
+4. **Connecter la base à ton app** :
+   - Clique sur le service **PostgreSQL** → onglet **Variables** (ou **Connect**).
+   - Tu vois **`DATABASE_URL`** (ex. `postgresql://postgres:xxx@xxx.railway.app:5432/railway`).
+   - Clique sur le **service de ton app** (pas la base).
+   - Onglet **Variables** → **Add Variable** (ou **+**).
+   - Nom : **`DATABASE_URL`**.
+   - Valeur : **copie la valeur** depuis le service PostgreSQL (bouton « Copy » à côté de `DATABASE_URL` dans le service Postgres, ou « Reference » si Railway propose de référencer la variable).
+   - Sauvegarde.
 
-1. Dans ton projet Railway, ouvre le **service** (ton app).
-2. Onglet **Variables** : on va ajouter les variables après.
-3. Onglet **Settings** (ou **Volumes** selon l’interface) :
-   - **Add Volume** (ou **Mount Volume**).
-   - **Mount path** : `/app/data` (Railway exécute l’app depuis `/app` ; le volume doit être dans ce chemin).
-   - Enregistre.
+Tu n’as **pas besoin de Volume** : la base est un service à part, les données restent entre les redéploiements.
 
-## 4. Variables d’environnement
+## 4. Autres variables (ton app)
 
-Dans le service → **Variables** (ou **Environment**), ajoute :
+Dans le **service de ton app** (pas Postgres) → **Variables**, assure-toi d’avoir :
 
-| Variable         | Valeur (exemple)     | Obligatoire |
-|------------------|----------------------|-------------|
-| `DATABASE_URL`   | `file:/app/data/prisma.db` | Oui    |
-| `ADMIN_USER`     | `admin`              | Recommandé  |
-| `ADMIN_PASSWORD` | un mot de passe fort | Oui        |
-
-- **DATABASE_URL** : doit pointer vers un chemin **dans** le volume, ici `/app/data/prisma.db`.
-- **ADMIN_USER** / **ADMIN_PASSWORD** : identifiants pour la zone `/admin` (Basic Auth).
-
-Tu peux tout mettre en **Plaintext** ; pour plus de sécurité, utilise les **Variables** sensibles de Railway si proposé.
+| Variable         | Valeur / remarque |
+|------------------|--------------------|
+| `DATABASE_URL`   | Copiée depuis le service PostgreSQL (voir ci-dessus). |
+| `ADMIN_USER`     | `admin` (ou ce que tu veux). |
+| `ADMIN_PASSWORD` | Un mot de passe fort. |
 
 ## 5. Commande de démarrage
 
-Railway utilise par défaut `npm run start`. Il faut d’abord appliquer les migrations Prisma à chaque déploiement.
-
-1. Dans le service → **Settings**.
-2. **Deploy** (ou **Build & Deploy**) :
-   - **Custom start command** (ou **Start Command**) :  
-     `npm run start:railway`  
-     (ce script fait `prisma migrate deploy` puis `next start`).
-
-Si l’option s’appelle **Start Command**, mets exactement :
+Dans le service de ton app → **Settings** → **Deploy** / **Start Command** :
 
 ```bash
 npm run start:railway
 ```
 
-Enregistre.
+(Ce script lance `prisma migrate deploy` puis `next start`.)
 
-## 6. Redéploiement
+## 6. URL publique
 
-- Déclenche un **Redeploy** (bouton dans l’onglet **Deployments** ou **Settings**).
-- Au premier déploiement avec le volume et `DATABASE_URL`, Prisma crée le fichier `/app/data/prisma.db` et applique les migrations.
+Dans le service de ton app → **Settings** → **Networking** → **Generate domain**.  
+Ton site est accessible à l’URL affichée (vitrine + `/admin`).
 
-## 7. URL publique
+## 7. Résumé
 
-1. Dans le service → **Settings** → **Networking** (ou **Public Networking**).
-2. **Generate domain** (ou **Add domain**) pour obtenir une URL du type `xxx.up.railway.app`.
-3. Ton site est accessible à cette URL (vitrine + `/admin` pour l’upload).
-
-## 8. Résumé des réglages
-
-- **Build** : `npm run build` (déjà configuré dans `package.json` avec `prisma generate`).
-- **Start** : `npm run start:railway` (migrations + `next start`).
-- **Volume** : monté en `/app/data`, `DATABASE_URL=file:/app/data/prisma.db`.
-- **Variables** : `DATABASE_URL`, `ADMIN_USER`, `ADMIN_PASSWORD`.
+- **Base** : service **PostgreSQL** Railway (données persistantes, pas de volume à gérer).
+- **App** : variable **`DATABASE_URL`** = celle du service Postgres.
+- **Start** : `npm run start:railway`.
+- À chaque redéploiement, la base reste intacte.
 
 ## Dépannage
 
-- **Build échoue** : vérifie que `prisma generate` est bien dans le script `build` et que les migrations sont commitées dans `prisma/migrations/`.
-- **Erreur au démarrage (DB)** : vérifie que le volume est bien monté en `/app/data` et que `DATABASE_URL` est `file:/app/data/prisma.db`.
-- **Admin ne marche pas** : vérifie que `ADMIN_PASSWORD` est défini (et `ADMIN_USER` si tu l’utilises).
-
-Une fois tout ça en place, chaque push sur la branche connectée déclenchera un nouveau déploiement (si l’auto-deploy est activé).
+- **« Relation does not exist »** : les migrations ne sont pas passées. Vérifie que `npm run start:railway` est bien la commande de démarrage et redéploie.
+- **Connexion refusée à la base** : vérifie que `DATABASE_URL` du service app pointe bien vers le service PostgreSQL (copier depuis les variables du service Postgres).

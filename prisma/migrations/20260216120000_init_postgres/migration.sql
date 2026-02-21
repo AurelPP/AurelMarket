@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE "PokemonListing" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" TEXT NOT NULL,
     "exportUuid" TEXT,
     "fingerprint" TEXT NOT NULL,
     "species" TEXT NOT NULL,
@@ -9,6 +9,7 @@ CREATE TABLE "PokemonListing" (
     "shiny" BOOLEAN NOT NULL,
     "gender" TEXT,
     "ability" TEXT,
+    "isHiddenAbility" BOOLEAN,
     "nature" TEXT,
     "friendship" INTEGER,
     "caughtBall" TEXT,
@@ -34,8 +35,10 @@ CREATE TABLE "PokemonListing" (
     "ev_spe" INTEGER,
     "movesJson" TEXT NOT NULL,
     "rawJson" TEXT NOT NULL,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "PokemonListing_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex

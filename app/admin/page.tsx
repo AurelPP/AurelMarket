@@ -69,6 +69,8 @@ export default function AdminPage() {
     }
   }
 
+  const [deleteAllBusy, setDeleteAllBusy] = useState(false);
+
   async function onDelete(id: string) {
     if (!confirm("Supprimer ce Pokémon du site ?")) return;
     try {
@@ -82,6 +84,31 @@ export default function AdminPage() {
       setMsg("✅ Pokémon supprimé.");
     } catch (e: unknown) {
       setMsg(`❌ ${e instanceof Error ? e.message : "Erreur"}`);
+    }
+  }
+
+  async function onDeleteAll() {
+    if (
+      !confirm(
+        "Supprimer TOUS les Pokémon de la base ? Cette action est irréversible."
+      )
+    )
+      return;
+    setDeleteAllBusy(true);
+    setMsg("");
+    try {
+      const res = await fetch("/api/admin/pokemon", {
+        method: "DELETE",
+        credentials: "include",
+      });
+      const out = await res.json();
+      if (!res.ok) throw new Error(out.error || "Erreur");
+      setMsg(`✅ Tous les Pokémon ont été supprimés (${out.deleted ?? 0}).`);
+      loadList();
+    } catch (e: unknown) {
+      setMsg(`❌ ${e instanceof Error ? e.message : "Erreur"}`);
+    } finally {
+      setDeleteAllBusy(false);
     }
   }
 
@@ -123,10 +150,22 @@ export default function AdminPage() {
       </div>
 
       <div className="mt-8 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
-        <h2 className="text-lg font-semibold">Gérer les Pokémon</h2>
-        <p className="mt-1 text-sm text-zinc-400">
-          Derniers 500 enregistrements. Clique sur « Supprimer » pour retirer un Pokémon du site.
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold">Gérer les Pokémon</h2>
+            <p className="mt-1 text-sm text-zinc-400">
+              Derniers 500 enregistrements. Clique sur « Supprimer » pour retirer un Pokémon du site.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onDeleteAll}
+            disabled={deleteAllBusy || listLoading}
+            className="rounded-lg border border-red-800 bg-red-950/50 px-4 py-2 text-sm font-medium text-red-300 hover:bg-red-900/50 disabled:opacity-50"
+          >
+            {deleteAllBusy ? "Suppression…" : "Supprimer tous les Pokémon"}
+          </button>
+        </div>
 
         {listLoading && <p className="mt-4 text-sm text-zinc-400">Chargement…</p>}
         {listError && <p className="mt-4 text-sm text-red-400">{listError}</p>}

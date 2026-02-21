@@ -19,3 +19,8 @@ export async function GET() {
   });
   return NextResponse.json({ ok: true, data: list });
 }
+
+export async function DELETE() {
+  const result = await prisma.pokemonListing.deleteMany({});
+  return NextResponse.json({ ok: true, deleted: result.count });
+}

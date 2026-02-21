@@ -76,26 +76,27 @@ git push -u origin main
 2. Choisis **Deploy from GitHub repo**.
 3. Si on te demande d’autoriser Railway : **Configure GitHub App** et autorise l’accès au repo `cobblemon-market` (ou "All repositories" si tu préfères).
 4. Sélectionne le repo **cobblemon-market**.
-5. Railway crée un service et lance un premier build (il peut échouer tant qu’on n’a pas mis le volume et les variables — c’est normal).
+5. Railway crée un service et lance un premier build.
 
-### Étape 3.3 – Ajouter un volume (pour la base SQLite)
-1. Clique sur ton **service** (la carte du projet).
-2. Onglet **Settings** (ou **Variables** puis cherche **Volumes** dans le menu).
-3. Section **Volumes** → **Add Volume** (ou **+ New Volume**).
-4. **Mount Path** : saisis **`/app/data`**.
-5. Enregistre / **Add**.
+### Étape 3.3 – Ajouter PostgreSQL (base persistante, plus de perte aux redéploiements)
+1. Dans le projet Railway, ouvre la **palette** : **Ctrl+K** (ou **Cmd+K**).
+2. Choisis **« Add PostgreSQL »** (ou **New** → **Database** → **PostgreSQL**).
+3. Railway crée un service **PostgreSQL** avec une variable **`DATABASE_URL`**.
+4. **Connecter la base à ton app** : clique sur ton **service app** → **Variables** → **Add Variable**.
+   - Nom : **`DATABASE_URL`**.
+   - Valeur : **copie la valeur** depuis le service **PostgreSQL** (Variables du service Postgres → copier `DATABASE_URL`).
+   - Sauvegarde.
 
-### Étape 3.4 – Variables d’environnement
-1. Dans le même service, va dans **Variables** (onglet en haut).
-2. **Add Variable** (ou **+ New Variable**) et ajoute une par une :
+Tu n’as pas besoin de Volume : la base est un service à part.
+
+### Étape 3.4 – Autres variables (ton app)
+1. Dans le service de ton **app** (pas Postgres) → **Variables**.
+2. Ajoute si pas déjà fait :
 
 | Nom              | Valeur                          |
 |------------------|----------------------------------|
-| `DATABASE_URL`   | `file:/app/data/prisma.db`      |
 | `ADMIN_USER`     | `admin`                         |
 | `ADMIN_PASSWORD` | (choisis un mot de passe fort)  |
-
-3. Sauvegarde. Railway redéploie souvent tout seul après un changement de variables.
 
 ### Étape 3.5 – Commande de démarrage
 1. Toujours dans le service → **Settings**.
@@ -140,4 +141,4 @@ git remote add origin https://github.com/TON_USERNAME/cobblemon-market.git
 git push -u origin main
 ```
 
-Ensuite : Railway → New Project → GitHub repo → Volume `/app/data` → Variables → Start command `npm run start:railway` → Generate domain.
+Ensuite : Railway → New Project → GitHub repo → Add PostgreSQL → Variables (DATABASE_URL depuis Postgres) → Start command `npm run start:railway` → Generate domain.
