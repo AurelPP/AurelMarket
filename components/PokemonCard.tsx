@@ -111,7 +111,7 @@ export function PokemonCard({ p }: { p: PokemonListing }) {
   return (
     <div
       className={`rounded-2xl border p-4 transition hover:bg-zinc-900/60 ${
-        isHiddenAbility
+        p.shiny
           ? "border-amber-400/60 bg-amber-950/30 ring-1 ring-amber-400/30"
           : "border-zinc-800 bg-zinc-900/40"
       }`}
