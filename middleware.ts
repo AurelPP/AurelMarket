@@ -13,7 +13,7 @@ function unauthorized() {
 
 async function checkSessionCookie(cookieValue: string): Promise<boolean> {
   const pass = process.env.ADMIN_PASSWORD;
-  if (!pass) return true;
+  if (!pass) return false;
   try {
     const payload = JSON.parse(atob(cookieValue)) as { t: number; h: string };
     if (Date.now() - payload.t > SESSION_HOURS * 60 * 60 * 1000) return false;
@@ -67,7 +67,7 @@ export async function middleware(req: NextRequest) {
 
   const user = process.env.ADMIN_USER || "admin";
   const pass = process.env.ADMIN_PASSWORD || "";
-  if (!pass) return NextResponse.next();
+  if (!pass) return unauthorized();
 
   const cookie = req.cookies.get(ADMIN_COOKIE)?.value;
   if (cookie && (await checkSessionCookie(cookie))) {
