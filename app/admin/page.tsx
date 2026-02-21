@@ -89,9 +89,14 @@ export default function AdminPage() {
     <main className="max-w-4xl mx-auto px-6 py-10">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Admin • Upload et gestion</h1>
-        <a className="text-sm text-zinc-300 hover:text-white underline" href="/">
-          Voir la vitrine
-        </a>
+        <div className="flex items-center gap-4">
+          <a className="text-sm text-zinc-300 hover:text-white underline" href="/">
+            Voir la vitrine
+          </a>
+          <a className="text-sm text-zinc-400 hover:text-white underline" href="/api/admin/logout">
+            Déconnexion
+          </a>
+        </div>
       </div>
 
       <div className="mt-6 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
