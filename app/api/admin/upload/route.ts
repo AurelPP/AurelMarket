@@ -25,7 +25,7 @@ type ExportPokemon = {
   moves?: string[];
 };
 
-/** Extrait le surnom affichable : string ou objet Cobblemon (ex. field_39005.comp_737). */
+/** Extrait le surnom affichable : string ou objet d'export (ex. field_39005.comp_737). */
 function nicknameString(nickname: string | Record<string, unknown> | null | undefined): string | null {
   if (nickname == null) return null;
   if (typeof nickname === "string") return nickname.trim() || null;

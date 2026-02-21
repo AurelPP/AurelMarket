@@ -1,4 +1,4 @@
-# Cobblemon Market (JSON -> Vitrine)
+# TropiShop (JSON → Vitrine)
 
 Petit site vitrine Next.js + Prisma + PostgreSQL.
 
@@ -21,7 +21,7 @@ npm run dev
 - Admin upload: http://localhost:3000/admin (Basic Auth via .env)
 
 ## Import
-Dans /admin, uploade un fichier JSON exporté par Cobblemon Export (un tableau d'objets Pokémon).
+Dans /admin, uploade un fichier JSON exporté par le jeu (un tableau d'objets Pokémon).
 
 ## Notes
 - Déduplication: si `uuid` est présent, on upsert dessus. Sinon, on utilise un `fingerprint`.

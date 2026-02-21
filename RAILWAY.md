@@ -1,4 +1,4 @@
-# Déployer Cobblemon Market sur Railway
+# Déployer TropiShop sur Railway
 
 Guide pour mettre l’app en ligne 24/7 sur [Railway](https://railway.app).  
 La base est en **PostgreSQL** (service Railway) : **plus de perte de données** aux redéploiements.

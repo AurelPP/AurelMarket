@@ -128,7 +128,7 @@ export default function AdminPage() {
 
       <div className="mt-6 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
         <p className="text-zinc-300">
-          Envoie le JSON exporté par Cobblemon (tableau de Pokémon).
+          Envoie le JSON exporté par le jeu (tableau de Pokémon).
         </p>
 
         <label className="mt-4 block">

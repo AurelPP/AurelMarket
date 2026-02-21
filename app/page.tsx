@@ -74,9 +74,9 @@ function HomePageContent() {
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-semibold">Cobblemon Market</h1>
+          <h1 className="text-3xl font-semibold">TropiShop</h1>
           <p className="text-zinc-300 mt-1">
-            Vitrine des cobblemons vendus par Ruael
+            Le stand de Ruael sur Tropimon
           </p>
         </div>
         <a className="text-sm text-zinc-300 hover:text-white underline" href="/admin">

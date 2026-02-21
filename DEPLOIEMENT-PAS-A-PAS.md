@@ -12,20 +12,20 @@ Tu n’as rien poussé sur GitHub : ce guide te mène du premier commit jusqu’
 
 ### Étape 1.2 – Créer un nouveau dépôt
 1. Clique sur **"+"** en haut à droite → **New repository**.
-2. **Repository name** : `cobblemon-market` (ou un autre nom si tu préfères).
+2. **Repository name** : `tropishop` (ou un autre nom si tu préfères).
 3. Laisse **Public**.
 4. **Ne coche pas** "Add a README" (le projet en a déjà un).
 5. Clique sur **Create repository**.
 
 Tu arrives sur une page avec une URL du type :  
-`https://github.com/TON_USERNAME/cobblemon-market.git`  
+`https://github.com/TON_USERNAME/tropishop.git`  
 Garde cette URL sous la main (remplace `TON_USERNAME` par ton pseudo GitHub).
 
 ---
 
 ## Partie 2 : Git sur ton PC
 
-Ouvre un terminal **dans le dossier du projet** (`c:\TropiShop\cobblemon-market`).
+Ouvre un terminal **dans le dossier du projet** (ex. `c:\TropiShop\tropishop`).
 
 ### Étape 2.1 – Vérifier que Git est installé
 ```bash
@@ -45,7 +45,7 @@ git add .
 
 ### Étape 2.4 – Premier commit
 ```bash
-git commit -m "Initial commit - Cobblemon Market"
+git commit -m "Initial commit - TropiShop"
 ```
 
 ### Étape 2.5 – Branche principale
@@ -55,9 +55,9 @@ git branch -M main
 ```
 
 ### Étape 2.6 – Lier à GitHub et pousser
-Remplace `TON_USERNAME` et `cobblemon-market` si tu as choisi un autre nom de repo :
+Remplace `TON_USERNAME` et `tropishop` si tu as choisi un autre nom de repo :
 ```bash
-git remote add origin https://github.com/TON_USERNAME/cobblemon-market.git
+git remote add origin https://github.com/TON_USERNAME/tropishop.git
 git push -u origin main
 ```
 - Si on te demande de te connecter : utilise ton compte GitHub (ou un **Personal Access Token** si tu as la 2FA).
@@ -74,8 +74,8 @@ git push -u origin main
 ### Étape 3.2 – Nouveau projet depuis GitHub
 1. **New Project**.
 2. Choisis **Deploy from GitHub repo**.
-3. Si on te demande d’autoriser Railway : **Configure GitHub App** et autorise l’accès au repo `cobblemon-market` (ou "All repositories" si tu préfères).
-4. Sélectionne le repo **cobblemon-market**.
+3. Si on te demande d’autoriser Railway : **Configure GitHub App** et autorise l’accès au repo (ex. `tropishop` ou "All repositories" si tu préfères).
+4. Sélectionne ton repo (ex. **tropishop** ou **AurelMarket**).
 5. Railway crée un service et lance un premier build.
 
 ### Étape 3.3 – Ajouter PostgreSQL (base persistante, plus de perte aux redéploiements)
@@ -109,7 +109,7 @@ Tu n’as pas besoin de Volume : la base est un service à part.
 1. Dans le service → **Settings** → **Networking** (ou **Public Networking**).
 2. **Generate domain** (ou **Add domain**).
 3. Tu obtiens une URL du type :  
-   **`cobblemon-market-production-xxxx.up.railway.app`**
+   **`tropishop-production-xxxx.up.railway.app`**
 
 ### Étape 3.7 – Redéploiement (pour être sûr)
 1. Onglet **Deployments**.
@@ -124,21 +124,21 @@ Tu n’as pas besoin de Volume : la base est un service à part.
 - **Admin (upload JSON)** : `https://ton-url.up.railway.app/admin`  
   → identifiants : `ADMIN_USER` / `ADMIN_PASSWORD` que tu as mis en variables.
 
-La première fois que tu iras sur `/admin`, la base sera vide ; tu pourras uploader ton JSON d’export Cobblemon comme en local.
+La première fois que tu iras sur `/admin`, la base sera vide ; tu pourras uploader ton JSON d’export comme en local.
 
 ---
 
 ## Récap des commandes (Partie 2)
 
-À exécuter dans `c:\TropiShop\cobblemon-market` :
+À exécuter dans le dossier du projet :
 
 ```bash
 git init
 git add .
-git commit -m "Initial commit - Cobblemon Market"
+git commit -m "Initial commit - TropiShop"
 git branch -M main
-git remote add origin https://github.com/TON_USERNAME/cobblemon-market.git
+git remote add origin https://github.com/TON_USERNAME/tropishop.git
 git push -u origin main
 ```
 
-Ensuite : Railway → New Project → GitHub repo → Add PostgreSQL → Variables (DATABASE_URL depuis Postgres) → Start command `npm run start:railway` → Generate domain.
+Ensuite : Railway → New Project → GitHub repo (ex. tropishop) → Add PostgreSQL → Variables (DATABASE_URL depuis Postgres) → Start command `npm run start:railway` → Generate domain.
