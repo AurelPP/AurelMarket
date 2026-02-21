@@ -1,0 +1,46 @@
+[
+  {
+    "uuid": "6b1680c1-f03c-4f0e-a86a-d8f0d90301e9",
+    "species": "sneasel",
+    "nickname": "Sneasel",
+    "level": 25,
+    "shiny": false,
+    "gender": "FEMALE",
+    "ability": "keeneye",
+    "nature": "naive",
+    "friendship": 35,
+    "caughtBall": "repeat_ball",
+    "current_hp": 25,
+    "max_hp": 67,
+    "stats": {
+      "hp": 67,
+      "atk": 57,
+      "def": 35,
+      "spa": 25,
+      "spd": 45,
+      "spe": 77
+    },
+    "ivs": {
+      "hp": 18,
+      "atk": 21,
+      "def": 11,
+      "spa": 10,
+      "spd": 31,
+      "spe": 31
+    },
+    "evs": {
+      "hp": 0,
+      "atk": 0,
+      "def": 0,
+      "spa": 0,
+      "spd": 0,
+      "spe": 0
+    },
+    "moves": [
+      "icywind",
+      "metalclaw",
+      "quickattack",
+      "taunt"
+    ]
+  }
+]

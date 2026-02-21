@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model PokemonListing {
+  id          String   @id @default(cuid())
+
+  // If export provides a UUID, we store it (not guaranteed unique across servers, but useful)
+  exportUuid  String?  @unique
+
+  // fallback dedupe key when exportUuid is missing
+  fingerprint String   @unique
+
+  species     String
+  nickname    String?
+  level       Int
+  shiny       Boolean
+  gender      String?
+  ability         String?
+  isHiddenAbility Boolean?  // talent caché
+  nature          String?
+
+  friendship  Int?
+  caughtBall  String?
+  current_hp  Int?
+  max_hp      Int?
+
+  // stats (calculated in export)
+  hp          Int?
+  atk         Int?
+  def         Int?
+  spa         Int?
+  spd         Int?
+  spe         Int?
+
+  // IVs
+  iv_hp       Int?
+  iv_atk      Int?
+  iv_def      Int?
+  iv_spa      Int?
+  iv_spd      Int?
+  iv_spe      Int?
+
+  // EVs
+  ev_hp       Int?
+  ev_atk      Int?
+  ev_def      Int?
+  ev_spa      Int?
+  ev_spd      Int?
+  ev_spe      Int?
+
+  movesJson   String
+  rawJson     String
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
