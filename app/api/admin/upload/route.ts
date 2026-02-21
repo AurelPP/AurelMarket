@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 type ExportPokemon = {
   uuid?: string;
   species: string;
-  nickname?: string;
+  nickname?: string | Record<string, unknown>;
   level: number;
   shiny: boolean;
   gender?: string;
@@ -25,6 +25,17 @@ type ExportPokemon = {
   moves?: string[];
 };
 
+/** Extrait le surnom affichable : string ou objet Cobblemon (ex. field_39005.comp_737). */
+function nicknameString(nickname: string | Record<string, unknown> | null | undefined): string | null {
+  if (nickname == null) return null;
+  if (typeof nickname === "string") return nickname.trim() || null;
+  if (typeof nickname !== "object") return null;
+  const f = (nickname as Record<string, unknown>).field_39005 as Record<string, unknown> | undefined;
+  const comp = f?.comp_737;
+  if (typeof comp === "string") return comp.trim() || null;
+  return null;
+}
+
 function fingerprintOf(p: ExportPokemon) {
   const payload = {
     uuid: p.uuid || null,
@@ -34,7 +45,7 @@ function fingerprintOf(p: ExportPokemon) {
     nature: p.nature || null,
     ability: p.ability || null,
     gender: p.gender || null,
-    nickname: p.nickname || null,
+    nickname: nicknameString(p.nickname),
     ivs: p.ivs || {},
     evs: p.evs || {},
     moves: (p.moves || []).slice().sort(),
@@ -71,7 +82,7 @@ export async function POST(req: Request) {
           update: {
             fingerprint: fp,
             species: p.species,
-            nickname: p.nickname || null,
+            nickname: nicknameString(p.nickname),
             level: p.level,
             shiny: !!p.shiny,
             gender: p.gender || null,
@@ -111,7 +122,7 @@ export async function POST(req: Request) {
             exportUuid: p.uuid,
             fingerprint: fp,
             species: p.species,
-            nickname: p.nickname || null,
+            nickname: nicknameString(p.nickname),
             level: p.level,
             shiny: !!p.shiny,
             gender: p.gender || null,
@@ -153,7 +164,7 @@ export async function POST(req: Request) {
           where: { fingerprint: fp },
           update: {
             species: p.species,
-            nickname: p.nickname || null,
+            nickname: nicknameString(p.nickname),
             level: p.level,
             shiny: !!p.shiny,
             gender: p.gender || null,
@@ -192,7 +203,7 @@ export async function POST(req: Request) {
           create: {
             fingerprint: fp,
             species: p.species,
-            nickname: p.nickname || null,
+            nickname: nicknameString(p.nickname),
             level: p.level,
             shiny: !!p.shiny,
             gender: p.gender || null,
