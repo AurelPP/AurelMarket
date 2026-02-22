@@ -13,7 +13,12 @@ type PokemonSprites = {
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
-  const species = url.searchParams.get("species")?.trim().toLowerCase().replace(/\s+/g, "-");
+  const species = url.searchParams
+    .get("species")
+    ?.trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/_/g, "-");
   const shiny = url.searchParams.get("shiny") === "1" || url.searchParams.get("shiny") === "true";
   if (!species) {
     return NextResponse.json({ error: "species requis" }, { status: 400 });

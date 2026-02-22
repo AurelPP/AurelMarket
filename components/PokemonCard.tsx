@@ -39,11 +39,20 @@ function evLine(p: PokemonListing) {
 }
 
 function spriteApiUrl(species: string, shiny: boolean): string {
-  const name = (species || "").trim();
+  const name = (species || "").trim().replace(/_/g, "-");
   if (!name) return "";
   const params = new URLSearchParams({ species: name });
   if (shiny) params.set("shiny", "1");
   return `/api/sprite?${params.toString()}`;
+}
+
+/** Découpe species en base + forme (ex. slowpoke_galar → slowpoke, galar). */
+function parseSpeciesForm(species: string): { base: string; form: string | null } {
+  const s = (species || "").trim();
+  if (!s) return { base: "", form: null };
+  const idx = s.search(/[-_]/);
+  if (idx <= 0) return { base: s, form: null };
+  return { base: s.slice(0, idx), form: s.slice(idx + 1) };
 }
 
 const STAT_LABELS: Record<string, string> = {
@@ -75,11 +84,13 @@ export function PokemonCard({ p }: { p: PokemonListing }) {
     }
   })();
 
+  const { base: baseSpecies, form: formPart } = parseSpeciesForm(p.species);
+
   useEffect(() => {
-    load("species", p.species).then(setSpeciesFr);
+    load("species", baseSpecies || p.species).then(setSpeciesFr);
     load("ability", p.ability).then(setAbilityFr);
     load("nature", p.nature).then(setNatureFr);
-  }, [p.species, p.ability, p.nature, load]);
+  }, [baseSpecies, p.species, p.ability, p.nature, load]);
 
   useEffect(() => {
     moves.slice(0, 8).forEach((m) => {
@@ -104,7 +115,9 @@ export function PokemonCard({ p }: { p: PokemonListing }) {
   const { stats: ivStats, sum: ivSum } = ivLine(p);
   const spriteUrl = spriteApiUrl(p.species, p.shiny);
 
-  const displaySpecies = displayName(speciesFr, p.species);
+  const baseDisplay = displayName(speciesFr, baseSpecies || p.species);
+  const formLabel = formPart ? cap(formPart) : "";
+  const displaySpecies = formLabel ? `${baseDisplay} (${formLabel})` : baseDisplay;
   const displayAbility = displayName(abilityFr, p.ability);
   const displayNature = displayName(natureFr, p.nature);
 

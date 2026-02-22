@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getEnglishSpeciesSlug } from "@/lib/species-fr-to-en";
 
 export const dynamic = "force-dynamic";
 
@@ -9,11 +10,15 @@ function toInt(v: string | null) {
   return Number.isFinite(n) ? n : null;
 }
 
+function slug(s: string): string {
+  return (s || "").toLowerCase().trim().replace(/\s+/g, "-").replace(/_/g, "-");
+}
+
 export async function GET(req: Request) {
   const url = new URL(req.url);
 
   const q = url.searchParams.get("q")?.trim().toLowerCase() || "";
-  const species = url.searchParams.get("species")?.trim().toLowerCase() || "";
+  const speciesParam = url.searchParams.get("species")?.trim() || "";
   const shiny = url.searchParams.get("shiny");
   const hiddenAbility = url.searchParams.get("hiddenAbility");
   const gender = url.searchParams.get("gender") || "";
@@ -27,13 +32,24 @@ export async function GET(req: Request) {
   const where: any = {};
 
   if (q) {
+    const qSlug = slug(q);
+    const enSlug = getEnglishSpeciesSlug(qSlug);
     where.OR = [
       { species: { contains: q } },
       { nickname: { contains: q } },
       { nature: { contains: q } },
     ];
+    if (enSlug) {
+      where.OR.push({ species: { contains: enSlug } });
+    }
   }
-  if (species) where.species = { contains: species };
+  if (speciesParam) {
+    const speciesSlug = slug(speciesParam);
+    const enSlug = getEnglishSpeciesSlug(speciesSlug);
+    where.species = enSlug
+      ? { contains: enSlug }
+      : { contains: speciesSlug };
+  }
   if (nature) where.nature = { contains: nature };
   if (gender) where.gender = gender;
   if (shiny === "true") where.shiny = true;
