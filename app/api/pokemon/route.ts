@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getEnglishSpeciesSlug } from "@/lib/species-fr-to-en";
+import { getEnglishSpeciesSlug, getEnglishSlugsForPartialQuery } from "@/lib/species-fr-to-en";
 
 export const dynamic = "force-dynamic";
 
@@ -33,22 +33,34 @@ export async function GET(req: Request) {
 
   if (q) {
     const qSlug = slug(q);
-    const enSlug = getEnglishSpeciesSlug(qSlug);
+    const enSlugExact = getEnglishSpeciesSlug(qSlug);
+    const enSlugsPartial = getEnglishSlugsForPartialQuery(qSlug);
     where.OR = [
       { species: { contains: q } },
       { nickname: { contains: q } },
       { nature: { contains: q } },
     ];
-    if (enSlug) {
-      where.OR.push({ species: { contains: enSlug } });
+    if (enSlugExact) where.OR.push({ species: { contains: enSlugExact } });
+    for (const en of enSlugsPartial) {
+      where.OR.push({ species: { contains: en } });
     }
   }
   if (speciesParam) {
     const speciesSlug = slug(speciesParam);
-    const enSlug = getEnglishSpeciesSlug(speciesSlug);
-    where.species = enSlug
-      ? { contains: enSlug }
-      : { contains: speciesSlug };
+    const enSlugExact = getEnglishSpeciesSlug(speciesSlug);
+    const enSlugsPartial = getEnglishSlugsForPartialQuery(speciesSlug);
+    const speciesOr =
+      enSlugExact || enSlugsPartial.length > 0
+        ? [...new Set([enSlugExact, ...enSlugsPartial].filter(Boolean))].map((en) => ({
+            species: { contains: en! },
+          }))
+        : [{ species: { contains: speciesSlug } }];
+    if (where.OR) {
+      where.AND = [{ OR: where.OR }, { OR: speciesOr }];
+      delete where.OR;
+    } else {
+      where.OR = speciesOr;
+    }
   }
   if (nature) where.nature = { contains: nature };
   if (gender) where.gender = gender;
@@ -72,8 +84,9 @@ export async function GET(req: Request) {
     );
   }
 
-  // Prisma SQLite doesn't do computed sum easily; we can filter client-side later.
-  if (and.length) where.AND = and;
+  if (and.length) {
+    where.AND = where.AND ? [...where.AND, ...and] : and;
+  }
 
   let orderBy: any = { createdAt: "desc" };
   if (sort === "level_desc") orderBy = { level: "desc" };

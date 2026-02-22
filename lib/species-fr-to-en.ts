@@ -188,3 +188,14 @@ export function getEnglishSpeciesSlug(speciesSlug: string): string | undefined {
   const key = normalizeKey(speciesSlug);
   return speciesFrToEn[key];
 }
+
+/** Retourne les slugs anglais dont le nom français contient la requête (ex. "ramo" → ["slowpoke"]). */
+export function getEnglishSlugsForPartialQuery(query: string): string[] {
+  const q = normalizeKey(query);
+  if (!q) return [];
+  const slugs = new Set<string>();
+  for (const [fr, en] of Object.entries(speciesFrToEn)) {
+    if (fr.includes(q)) slugs.add(en);
+  }
+  return Array.from(slugs);
+}
